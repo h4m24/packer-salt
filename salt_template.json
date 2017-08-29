@@ -1,0 +1,36 @@
+{
+  "variables": {
+    "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `access_key`}}",
+      "secret_key": "{{user `secret_key`}}",
+      "region": "eu-west-1",
+      "source_ami": "ami-785db401",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "vpc_id": "vpc-923a5ff5",
+      "subnet_id": "subnet-0cd04d6b",
+      "ami_name": "packer-test-{{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "salt-masterless",
+      "salt_call_args": "--state_output=mixed",
+      "local_state_tree": "./salt/states",
+      "local_pillar_roots": "./salt/pillars"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "shell-local",
+      "inline": [
+        "echo foo"
+      ]
+    }
+  ]
+}
